@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -x
+
+nigit env.sh hello.sh pipe.sh &
+NIGIT_PID="$!"
+
+echo "NIGIT_PID:$NIGIT_PID"
+
+sleep 5
+
+curl -s "http://localhost:8000/env?var=abc&foo=boo"
+curl -s -X POST -H "Content-Type: application/json" -d '{"envs":["VAR=ABC"]}' "http://localhost:8000/env"
+curl -s -X POST -H "Content-Type: application/json" -d '{"stdin":"abc"}' "http://localhost:8000/pipe"
+curl -s "http://localhost:8000/pipe?stdin=abc"
+curl -s "http://localhost:8000/hello"
+
+kill $NIGIT_PID
+
+
